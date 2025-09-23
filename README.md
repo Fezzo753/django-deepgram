@@ -5,6 +5,17 @@
 
 This sample demonstrates interacting with the Deepgram API from Django to make transcriptions of prerecorded files. It uses the Deepgram Python SDK, with a javascript client built from web components (no `npm` requirements).
 
+## ✨ New Features
+
+This enhanced version includes:
+
+- **🎭 Sentiment Analysis**: Real-time sentiment detection (positive, negative, neutral) with confidence scores
+- **🤖 Multiple Models**: Support for Nova-2, Nova-3, Whisper Cloud, Base, and Enhanced models
+- **📥 Export Options**: Export transcripts in JSON, TXT, SRT, and VTT formats
+- **💾 Auto-Save**: Automatic JSON result saving with timestamps
+- **🎨 Enhanced UI**: Color-coded sentiment display and organized export functionality
+- **📊 Advanced Features**: Summarization, topic detection, diarization, and more
+
 ## What is Deepgram?
 
 [Deepgram’s](https://deepgram.com/) voice AI platform provides APIs for speech-to-text, text-to-speech, and full speech-to-speech voice agents. Over 200,000+ developers use Deepgram to build voice AI products and features.
