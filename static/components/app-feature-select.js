@@ -62,7 +62,17 @@ class AppFeatureSelect extends LitElement {
     }
 
     .tabcontent input {
-      background-color: ;
+      background-color: #2e3c4d;
+      color: white;
+      border: 1px solid #3d4f66;
+      border-radius: 0.0625rem;
+      padding: 8px;
+      margin: 5px 0;
+    }
+
+    .tabcontent input[type="text"] {
+      width: 100%;
+      max-width: 300px;
     }
 
     .tabcontent label {
@@ -134,14 +144,14 @@ class AppFeatureSelect extends LitElement {
         key: "profanity_filter",
         dataType: "boolean",
       },
-      // {
-      //   category: "REPLACEMENT",
-      //   name: "Redaction",
-      //   description:
-      //     "Indicates whether to redact sensitive information, replacing redacted content with asterisks (*).",
-      //   key: "redact",
-      //   dataType: "string",
-      // },
+      {
+        category: "REPLACEMENT",
+        name: "Redaction",
+        description:
+          "Indicates whether to redact sensitive information, replacing redacted content with asterisks (*).",
+        key: "redact",
+        dataType: "string",
+      },
       // {
       //   category: "REPLACEMENT",
       //   name: "Find and Replace",
@@ -150,34 +160,41 @@ class AppFeatureSelect extends LitElement {
       //   key: "replace",
       //   dataType: "string",
       // },
-      // {
-      //   category: "IDENTIFICATION",
-      //   name: "Search",
-      //   description:
-      //     "Terms or phrases to search for in the submitted audio. Deepgram searches for acoustic patterns in audio rather than text patterns in transcripts because we have noticed that acoustic pattern matching is more performant.",
-      //   key: "search",
-      //   dataType: "string",
-      // },
-      // {
-      //   category: "IDENTIFICATION",
-      //   name: "Keywords",
-      //   description:
-      //     "Keywords to which the model should pay particular attention to boosting or suppressing to help it understand context. Intensifier indicates how much you want to boost it. The default Intensifier is one (1). An Intensifier of two (2) equates to two boosts multiplied in a row, whereas zero (0) is equivalent to not specifying a keywords keyeter at all.",
-      //   key: "keywords",
-      //   dataType: "string",
-      // },
-      // {
-      //   category: "IDENTIFICATION",
-      //   name: "Language Detection",
-      //   description: "Indicates whether to identify which language is spoken.",
-      //   key: "detect_language",
-      //   dataType: "boolean",
-      // },
+      {
+        category: "IDENTIFICATION",
+        name: "Search",
+        description:
+          "Terms or phrases to search for in the submitted audio. Deepgram searches for acoustic patterns in audio rather than text patterns in transcripts because we have noticed that acoustic pattern matching is more performant.",
+        key: "search",
+        dataType: "string",
+      },
+      {
+        category: "IDENTIFICATION",
+        name: "Keywords",
+        description:
+          "Keywords to which the model should pay particular attention to boosting or suppressing to help it understand context. Intensifier indicates how much you want to boost it. The default Intensifier is one (1). An Intensifier of two (2) equates to two boosts multiplied in a row, whereas zero (0) is equivalent to not specifying a keywords parameter at all.",
+        key: "keywords",
+        dataType: "string",
+      },
+      {
+        category: "IDENTIFICATION",
+        name: "Language Detection",
+        description: "Indicates whether to identify which language is spoken.",
+        key: "detect_language",
+        dataType: "boolean",
+      },
       {
         category: "IDENTIFICATION",
         name: "Diarization",
         description: "Indicates whether to recognize speaker changes.",
         key: "diarize",
+        dataType: "boolean",
+      },
+      {
+        category: "IDENTIFICATION",
+        name: "Multi-Channel",
+        description: "Indicates whether to process audio with multiple channels separately.",
+        key: "multichannel",
         dataType: "boolean",
       },
       {
@@ -196,14 +213,30 @@ class AppFeatureSelect extends LitElement {
         key: "detect_topics",
         dataType: "boolean",
       },
-      // {
-      //   category: "INFERENCE",
-      //   name: "Entity Detection (beta)",
-      //   description:
-      //     "Indicates whether Deepgram will identify and extract key entities for sections of content.",
-      //   key: "detect_entities",
-      //   dataType: "boolean",
-      // },
+      {
+        category: "INFERENCE",
+        name: "Entity Detection (beta)",
+        description:
+          "Indicates whether Deepgram will identify and extract key entities for sections of content.",
+        key: "detect_entities",
+        dataType: "boolean",
+      },
+      {
+        category: "INFERENCE",
+        name: "Intent Detection",
+        description:
+          "Indicates whether Deepgram will identify and extract intents from the content.",
+        key: "detect_intents",
+        dataType: "boolean",
+      },
+      {
+        category: "INFERENCE",
+        name: "Sentiment Analysis",
+        description:
+          "Indicates whether Deepgram will analyze and extract sentiment from the content.",
+        key: "analyze_sentiment",
+        dataType: "boolean",
+      },
     ];
   }
 
@@ -262,11 +295,20 @@ class AppFeatureSelect extends LitElement {
   }
 
   selectFeature(e) {
-    if (this.selectedFeatures.hasOwnProperty(e.target.name)) {
-      const featureToDelete = e.target.name;
-      delete this.selectedFeatures[featureToDelete];
-    } else {
-      this.selectedFeatures[e.target.name] = true;
+    if (e.target.type === "checkbox") {
+      if (this.selectedFeatures.hasOwnProperty(e.target.name)) {
+        const featureToDelete = e.target.name;
+        delete this.selectedFeatures[featureToDelete];
+      } else {
+        this.selectedFeatures[e.target.name] = true;
+      }
+    } else if (e.target.type === "text") {
+      if (e.target.value.trim() === "") {
+        const featureToDelete = e.target.name;
+        delete this.selectedFeatures[featureToDelete];
+      } else {
+        this.selectedFeatures[e.target.name] = e.target.value;
+      }
     }
 
     if (this.selectedFeatures.hasOwnProperty("diarize")) {
@@ -307,7 +349,10 @@ class AppFeatureSelect extends LitElement {
           ${this.displayedFeatures.map(
             (feature) =>
               html`
-                  <input type="checkbox" id="${feature.key}" name="${feature.key}" @change="${this.selectFeature}"><label for="${feature.key}">${feature.name}</label><p>${feature.description}</p></div>`
+                <input type="checkbox" id="${feature.key}" name="${feature.key}" @change="${this.selectFeature}">
+                <label for="${feature.key}">${feature.name}</label>
+                <p>${feature.description}</p>
+              `
           )}
         </section>
       </div>
@@ -316,8 +361,17 @@ class AppFeatureSelect extends LitElement {
         <section @load=${this.filterFeatures("REPLACEMENT")}>
           ${this.displayedFeatures.map(
             (feature) =>
-              html`
-                  <input type="checkbox" id="${feature.key}" name="${feature.key}" @change="${this.selectFeature}"><label for="${feature.key}">${feature.name}</label><p>${feature.description}</p></div>`
+              feature.dataType === "boolean"
+                ? html`
+                    <input type="checkbox" id="${feature.key}" name="${feature.key}" @change="${this.selectFeature}">
+                    <label for="${feature.key}">${feature.name}</label>
+                    <p>${feature.description}</p>
+                  `
+                : html`
+                    <label for="${feature.key}">${feature.name}</label>
+                    <input type="text" id="${feature.key}" name="${feature.key}" placeholder="Enter values" @input="${this.selectFeature}">
+                    <p>${feature.description}</p>
+                  `
           )}
         </section>
       </div>
@@ -326,8 +380,17 @@ class AppFeatureSelect extends LitElement {
         <section @load=${this.filterFeatures("IDENTIFICATION")}>
           ${this.displayedFeatures.map(
             (feature) =>
-              html`
-                  <input type="checkbox" id="${feature.key}" name="${feature.key}" @change="${this.selectFeature}"><label for="${feature.key}">${feature.name}</label><p>${feature.description}</p></div>`
+              feature.dataType === "boolean"
+                ? html`
+                    <input type="checkbox" id="${feature.key}" name="${feature.key}" @change="${this.selectFeature}">
+                    <label for="${feature.key}">${feature.name}</label>
+                    <p>${feature.description}</p>
+                  `
+                : html`
+                    <label for="${feature.key}">${feature.name}</label>
+                    <input type="text" id="${feature.key}" name="${feature.key}" placeholder="Enter values" @input="${this.selectFeature}">
+                    <p>${feature.description}</p>
+                  `
           )}
         </section>
       </div>
