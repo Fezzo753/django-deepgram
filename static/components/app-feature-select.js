@@ -215,6 +215,14 @@ class AppFeatureSelect extends LitElement {
       },
       {
         category: "INFERENCE",
+        name: "Custom Topics",
+        description:
+          "Provide a list of custom topics for Deepgram to detect and classify content against. Enter topics separated by commas (e.g., 'technology, business, sports').",
+        key: "topics",
+        dataType: "string",
+      },
+      {
+        category: "INFERENCE",
         name: "Entity Detection (beta)",
         description:
           "Indicates whether Deepgram will identify and extract key entities for sections of content.",
@@ -228,6 +236,14 @@ class AppFeatureSelect extends LitElement {
           "Indicates whether Deepgram will identify and extract intents from the content.",
         key: "detect_intents",
         dataType: "boolean",
+      },
+      {
+        category: "INFERENCE",
+        name: "Custom Intents",
+        description:
+          "Provide a list of custom intents for Deepgram to detect and classify content against. Enter intents separated by commas (e.g., 'booking, complaint, inquiry').",
+        key: "intents",
+        dataType: "string",
       },
       {
         category: "INFERENCE",
@@ -307,7 +323,15 @@ class AppFeatureSelect extends LitElement {
         const featureToDelete = e.target.name;
         delete this.selectedFeatures[featureToDelete];
       } else {
-        this.selectedFeatures[e.target.name] = e.target.value;
+        // Handle comma-separated values for topics and intents as arrays
+        if (e.target.name === "topics" || e.target.name === "intents") {
+          this.selectedFeatures[e.target.name] = e.target.value
+            .split(",")
+            .map(item => item.trim())
+            .filter(item => item.length > 0);
+        } else {
+          this.selectedFeatures[e.target.name] = e.target.value;
+        }
       }
     }
 
