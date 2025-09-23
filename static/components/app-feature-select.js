@@ -196,6 +196,14 @@ class AppFeatureSelect extends LitElement {
         key: "detect_topics",
         dataType: "boolean",
       },
+      {
+        category: "INFERENCE",
+        name: "Sentiment Analysis",
+        description:
+          "Indicates whether Deepgram will identify sentiment in sections of content (positive, negative, neutral).",
+        key: "sentiment",
+        dataType: "boolean",
+      },
       // {
       //   category: "INFERENCE",
       //   name: "Entity Detection (beta)",

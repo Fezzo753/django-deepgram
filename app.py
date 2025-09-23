@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import datetime
 
 from deepgram import Deepgram
 from django.conf import settings
@@ -35,6 +36,11 @@ settings.configure(
 
 deepgram = Deepgram(os.environ.get("DEEPGRAM_API_KEY"))
 
+# Create results directory if it doesn't exist
+RESULTS_DIR = "results"
+if not os.path.exists(RESULTS_DIR):
+    os.makedirs(RESULTS_DIR)
+
 
 async def transcribe(request):
     if request.method == "POST":
@@ -63,8 +69,13 @@ async def transcribe(request):
             if version:
                 dgFeatures["version"] = version
 
-            if model == "whisper":
+            # Handle different model types properly
+            if model == "whisper-cloud":
+                dgFeatures["tier"] = tier if tier else "base"
+            elif model == "whisper":
                 dgFeatures["tier"] = tier
+            elif model == "general":
+                dgFeatures["tier"] = tier if tier else "nova-2"
 
             if not dgRequest:
                 raise Exception(
@@ -75,6 +86,14 @@ async def transcribe(request):
                 dgRequest, dgFeatures
             )
 
+            # Save JSON results automatically
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"transcript_{timestamp}.json"
+            filepath = os.path.join(RESULTS_DIR, filename)
+            
+            with open(filepath, 'w') as f:
+                json.dump(transcription, f, indent=2)
+
             return JsonResponse(
                 {
                     "model": model,
@@ -82,6 +101,7 @@ async def transcribe(request):
                     "tier": tier,
                     "dgFeatures": dgFeatures,
                     "transcription": transcription,
+                    "saved_file": filename,
                 }
             )
         except Exception as error:
