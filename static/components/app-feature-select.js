@@ -253,6 +253,7 @@ class AppFeatureSelect extends LitElement {
         key: "analyze_sentiment",
         dataType: "boolean",
       },
+
     ];
   }
 
