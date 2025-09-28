@@ -34,7 +34,16 @@ settings.configure(
     ],
 )
 
-deepgram = Deepgram(os.environ.get("DEEPGRAM_API_KEY"))
+# Validate and initialize Deepgram API key
+DEEPGRAM_API_KEY = os.environ.get("DEEPGRAM_API_KEY")
+if not DEEPGRAM_API_KEY or DEEPGRAM_API_KEY == "%api_key%":
+    raise ValueError(
+        "DEEPGRAM_API_KEY environment variable is not set or contains placeholder value. "
+        "Please copy sample.env to .env and replace %api_key% with your actual Deepgram API key. "
+        "Get your API key from https://console.deepgram.com/"
+    )
+
+deepgram = Deepgram(DEEPGRAM_API_KEY)
 
 # Create results directory if it doesn't exist
 RESULTS_DIR = "results"
