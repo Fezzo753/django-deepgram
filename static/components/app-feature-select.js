@@ -290,16 +290,32 @@ class AppFeatureSelect extends LitElement {
     
     // Listen for language changes
     document.addEventListener('languageselect', this._handleLanguageChange.bind(this));
+    
+    // Listen for requests to disable sentiment analysis
+    document.addEventListener('disable-sentiment-analysis', this._handleDisableSentiment.bind(this));
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     document.removeEventListener('languageselect', this._handleLanguageChange.bind(this));
+    document.removeEventListener('disable-sentiment-analysis', this._handleDisableSentiment.bind(this));
   }
 
   _handleLanguageChange(e) {
     this.selectedLanguage = e.detail;
     this.requestUpdate();
+  }
+
+  _handleDisableSentiment(e) {
+    // Automatically uncheck sentiment analysis checkbox
+    const sentimentCheckbox = this.renderRoot?.querySelector('#analyze_sentiment');
+    if (sentimentCheckbox && sentimentCheckbox.checked) {
+      sentimentCheckbox.checked = false;
+      // Remove from selected features
+      delete this.selectedFeatures.analyze_sentiment;
+      // Trigger change event
+      this.selectFeature({ target: sentimentCheckbox });
+    }
   }
 
   _isFeatureDisabled(feature) {

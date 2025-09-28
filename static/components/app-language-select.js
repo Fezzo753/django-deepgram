@@ -71,6 +71,7 @@ class AppLanguageSelect extends LitElement {
     this.selectedFeatures = {};
     
     // Deepgram supported languages based on their documentation
+    // Sentiment analysis is currently only supported for English variants
     this.languages = [
       { code: "en-US", name: "English (US)", sentiment: true },
       { code: "en-GB", name: "English (UK)", sentiment: true },
@@ -80,6 +81,7 @@ class AppLanguageSelect extends LitElement {
       { code: "zh", name: "Chinese (Mandarin)", sentiment: false },
       { code: "zh-CN", name: "Chinese (Simplified)", sentiment: false },
       { code: "zh-TW", name: "Chinese (Traditional)", sentiment: false },
+      { code: "da", name: "Danish", sentiment: false },
       { code: "nl", name: "Dutch", sentiment: false },
       { code: "fr", name: "French", sentiment: false },
       { code: "fr-CA", name: "French (Canada)", sentiment: false },
@@ -99,6 +101,7 @@ class AppLanguageSelect extends LitElement {
       { code: "es-419", name: "Spanish (Latin America)", sentiment: false },
       { code: "sv", name: "Swedish", sentiment: false },
       { code: "ta", name: "Tamil", sentiment: false },
+      { code: "th", name: "Thai", sentiment: false },
       { code: "tr", name: "Turkish", sentiment: false },
       { code: "uk", name: "Ukrainian", sentiment: false },
     ];
@@ -149,6 +152,14 @@ class AppLanguageSelect extends LitElement {
       this._showAlert(`Sentiment analysis is not supported for ${language.name}. Please select an English variant or disable sentiment analysis.`);
     } else {
       this._hideAlert();
+    }
+
+    // Automatically uncheck sentiment analysis if language doesn't support it
+    if (language && !language.sentiment && hasSentimentAnalysis) {
+      // Dispatch event to uncheck sentiment analysis
+      document.dispatchEvent(new CustomEvent('disable-sentiment-analysis', {
+        detail: { reason: 'language-incompatible' }
+      }));
     }
   }
 
