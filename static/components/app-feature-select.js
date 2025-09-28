@@ -6,6 +6,7 @@ class AppFeatureSelect extends LitElement {
     displayedFeatures: {},
     selectedFeatures: {},
     currentCategory: {},
+    selectedLanguage: {},
   };
 
   static styles = css`
@@ -82,12 +83,22 @@ class AppFeatureSelect extends LitElement {
     .tabcontent p {
       color: #ededf2;
     }
+
+    .disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .disabled label {
+      color: #888;
+    }
   `;
 
   constructor() {
     super();
     this.displayedFeatures = [];
     this.selectedFeatures = {};
+    this.selectedLanguage = { code: "en-US", supportsSentiment: true };
     this.categories = [
       "FORMATTING",
       "REPLACEMENT",
@@ -276,6 +287,27 @@ class AppFeatureSelect extends LitElement {
     for (let i = 1; i < this._tabcontent.length; i++) {
       this._tabcontent[i].style.display = "none";
     }
+    
+    // Listen for language changes
+    document.addEventListener('languageselect', this._handleLanguageChange.bind(this));
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    document.removeEventListener('languageselect', this._handleLanguageChange.bind(this));
+  }
+
+  _handleLanguageChange(e) {
+    this.selectedLanguage = e.detail;
+    this.requestUpdate();
+  }
+
+  _isFeatureDisabled(feature) {
+    // Disable sentiment analysis for languages that don't support it
+    if (feature.key === "analyze_sentiment" && this.selectedLanguage && !this.selectedLanguage.supportsSentiment) {
+      return true;
+    }
+    return false;
   }
 
   openSection(e) {
@@ -425,14 +457,20 @@ class AppFeatureSelect extends LitElement {
           ${this.displayedFeatures.map(
             (feature) =>
               html`
-                <input
-                  type="checkbox"
-                  id="${feature.key}"
-                  name="${feature.key}"
-                  @change="${this.selectFeature}"
-                />
-                <label for="${feature.key}">${feature.name}</label>
-                <p>${feature.description}</p>
+                <div class="${this._isFeatureDisabled(feature) ? 'disabled' : ''}">
+                  <input
+                    type="checkbox"
+                    id="${feature.key}"
+                    name="${feature.key}"
+                    @change="${this.selectFeature}"
+                    ?disabled="${this._isFeatureDisabled(feature)}"
+                  />
+                  <label for="${feature.key}">${feature.name}</label>
+                  <p>${feature.description}</p>
+                  ${this._isFeatureDisabled(feature) ? 
+                    html`<p style="color: #f44336; font-size: 12px;">Not supported for selected language</p>` : 
+                    null}
+                </div>
               `
           )}
         </section>

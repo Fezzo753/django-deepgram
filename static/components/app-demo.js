@@ -11,6 +11,7 @@ class AppDemo extends LitElement {
     file: {},
     fileUrl: {},
     selectedFeatures: {},
+    selectedLanguage: {},
   };
 
   static styles = css`
@@ -64,6 +65,7 @@ class AppDemo extends LitElement {
     this.file = {};
     this.fileUrl = "";
     this.selectedFeatures = {};
+    this.selectedLanguage = { code: "en-US", supportsSentiment: true };
     this.error = "";
     this.done = true;
     this.working = false;
@@ -87,6 +89,7 @@ class AppDemo extends LitElement {
     formData.append("model", this.selectedModel.model);
     formData.append("tier", this.selectedModel.tier);
     formData.append("features", JSON.stringify(this.selectedFeatures));
+    formData.append("language", this.selectedLanguage.code);
     console.log("submit request");
 
     try {
@@ -147,12 +150,18 @@ class AppDemo extends LitElement {
     this.requestUpdate();
   }
 
+  _languageSelectListener(e) {
+    this.selectedLanguage = e.detail;
+    this.requestUpdate();
+  }
+
   render() {
     return html`
       <div
         @fileselect=${this._fileSelectListener}
         @modelselect=${this._modelSelectListener}
         @fileURLselect=${this._fileURLSelectListener}
+        @languageselect=${this._languageSelectListener}
         @featureselect=${this._featureSelectListener}
         class="app-demo"
       >

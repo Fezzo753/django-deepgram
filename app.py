@@ -61,6 +61,7 @@ async def transcribe(request):
         model = form.get("model")
         version = form.get("version")
         tier = form.get("tier")
+        language = form.get("language")
 
         dgFeatures = json.loads(features)
         dgRequest = None
@@ -77,6 +78,9 @@ async def transcribe(request):
 
             if version:
                 dgFeatures["version"] = version
+
+            if language:
+                dgFeatures["language"] = language
 
             # Handle different model types properly
             if model == "whisper-cloud":
