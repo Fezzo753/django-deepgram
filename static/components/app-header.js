@@ -62,15 +62,9 @@ class AppHeader extends LitElement {
       <div class="nav-margin">
         <div class="nav-brand">
           <img src="assets/dg.svg" class="nav-logo" />
-          <div>Starter Apps</div>
-        </div>
+          </div>
 
-        <app-button-link
-          url="https://github.com/deepgram-starters"
-          class="secondary"
-        >
-          <span style="margin-right:10px;">Get the code on Github</span>
-        </app-button-link>
+    
       </div>
     </nav>`;
   }
